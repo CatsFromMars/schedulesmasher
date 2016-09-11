@@ -10,6 +10,9 @@ class TeamMembersController < ApplicationController
   # GET /team_members/1
   # GET /team_members/1.json
   def show
+    @testt = session[:cal]
+    @meeting = @team_member.meeting_id
+    
   end
 
   # GET /team_members/new
@@ -60,6 +63,20 @@ class TeamMembersController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def uploader
+    @team_member = TeamMember.find(params[:id])
+    uploaded_file = params[:file]
+    eventsArray = TeamMember.read_file(uploaded_file)
+    TeamMember.save_to_db(eventsArray)
+
+    session[:cal] = eventsArray[0]
+
+    respond_to do |format|
+      format.html { redirect_to @meeting, notice: 'Schedule successfully uploaded.' }
+    end
+  end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
